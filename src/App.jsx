@@ -38,7 +38,7 @@ export default function App(){
   const update=(k,v)=>setMember(m=>({...m,[k]:v}));
   const saveMember=async()=>{
   try{
-    const response=await fetch('https://script.google.com/macros/s/AKfycbxLM-jDJVXNAgCteWXizDTINePGRJbwhFq5rFd2ZnBM5JNIn6dBwFx6whM7DYURR3AU/exec',{
+    const response=await fetch(''/api/register',{
       method:'POST',
       headers:{'Content-Type':'text/plain;charset=utf-8'},
       body:JSON.stringify({action:'register',member})
