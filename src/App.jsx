@@ -36,7 +36,22 @@ export default function App(){
   const totalOut=transactions.filter(x=>x.type==='Keluar').reduce((a,b)=>a+b.amount,0);
   const money=n=>new Intl.NumberFormat('id-ID',{style:'currency',currency:'IDR',maximumFractionDigits:0}).format(n);
   const update=(k,v)=>setMember(m=>({...m,[k]:v}));
-  const saveMember=()=>{setMembers(a=>[...a.filter(x=>x.registerNo!==member.registerNo),member]);setShowForm(false);setNotice('Data anggota tersimpan pada pratinjau lokal. Hubungkan backend sebelum digunakan sungguhan.');};
+  const saveMember=async()=>{
+  try{
+    const response=await fetch('https://script.google.com/macros/s/AKfycbxLM-jDJVXNAgCteWXizDTINePGRJbwhFq5rFd2ZnBM5JNIn6dBwFx6whM7DYURR3AU/exec',{
+      method:'POST',
+      headers:{'Content-Type':'text/plain;charset=utf-8'},
+      body:JSON.stringify({action:'register',member})
+    });
+    const result=await response.json();
+    if(!result.ok) throw new Error(result.error||'Gagal menyimpan');
+    setMembers(a=>[...a.filter(x=>x.registerNo!==result.registerNo),{...member,registerNo:result.registerNo}]);
+    setShowForm(false);
+    setNotice('Pendaftaran berhasil dikirim. Status menunggu persetujuan.');
+  }catch(error){
+    setNotice('Gagal menyimpan: '+error.message);
+  }
+};
   const field=(label,key,placeholder='',type='text')=><label className="field"><span>{label}</span><input type={type} value={member[key]||''} placeholder={placeholder} onChange={e=>update(key,e.target.value)}/></label>;
   const admin=role==='admin';
   return <div className="shell">
